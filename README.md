@@ -17,3 +17,17 @@ docker compose up --build -d
 ```
 docker compose logs -f
 ```
+
+> Note that once you spin up the containers with the command specified above,
+
+> To stop the application, run:
+
+```
+docker compose down
+```
+
+> To start the application again, run:
+
+```
+docker compose up -d
+```
