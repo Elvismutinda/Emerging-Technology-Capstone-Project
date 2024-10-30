@@ -18,6 +18,8 @@ docker compose up --build -d
 docker compose logs -f
 ```
 
+Open [http://localhost:8080](http://localhost:8080) with your browser to access the web application.
+
 > Note that once you spin up the containers with the command specified above,
 
 > To stop the application, run:
