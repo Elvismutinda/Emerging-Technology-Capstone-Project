@@ -1,7 +1,7 @@
 "use client";
 
 import { TransactionType } from "@/types";
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -31,9 +31,10 @@ import { Input } from "@/components/ui/input";
 
 interface Props {
   type: TransactionType;
+  trigger?: ReactNode;
 }
 
-function CreateCategoryDialog({ type }: Props) {
+function CreateCategoryDialog({ type, trigger }: Props) {
   const [open, setOpen] = useState(false);
   const form = useForm<CreateCategoryRequest>({
     resolver: zodResolver(CreateCategorySchema),
@@ -45,13 +46,17 @@ function CreateCategoryDialog({ type }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          className="flex border-separate items-center justify-start rounded-none border-b px-3 py-3 text-muted-foreground"
-        >
-          <PlusSquare className="w-4 h-4 mr-2" />
-          Create new
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button
+            variant="ghost"
+            className="flex border-separate items-center justify-start rounded-none border-b px-3 py-3 text-muted-foreground"
+          >
+            <PlusSquare className="w-4 h-4 mr-2" />
+            Create new
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -99,6 +104,7 @@ function CreateCategoryDialog({ type }: Props) {
               Cancel
             </Button>
           </DialogClose>
+          <Button>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
