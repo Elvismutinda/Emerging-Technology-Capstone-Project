@@ -5,7 +5,9 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM nginx
+# Use Node.js to serve the Next.js app dynamically
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=build /app ./
 EXPOSE 3000
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/out /usr/share/nginx/html
+CMD ["npm", "run", "start"]
