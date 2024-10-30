@@ -9,5 +9,9 @@ RUN npm run build
 FROM node:18-alpine
 WORKDIR /app
 COPY --from=build /app ./
+
+# curl for health checks
+RUN apk add --no-cache curl
+
 EXPOSE 3000
 CMD ["npm", "run", "start"]
