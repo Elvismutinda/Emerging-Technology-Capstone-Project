@@ -1,23 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
 
 func main() {
 	// HTTP server setup
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, HTTP!"))
-	})
-
+	http.HandleFunc("/", handler)
 	log.Println("HTTP server listening on port 8000")
-	go func() {
-		err := http.ListenAndServe(":8000", nil)
-		if err != nil {
-			log.Fatalf("Failed to start HTTP server: %v", err)
-		}
-	}()
+	log.Fatal(http.ListenAndServe(":8000", nil))
 
-	// Set up the gRPC server (using a different port, e.g., 50051)
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Budget Tracker (^-^)")
 }
