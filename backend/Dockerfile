@@ -2,16 +2,16 @@
 # Change this if necessary. I just wrote it to fill it up for now
 # Delete this comment when you're done
 
-FROM node:20
+FROM golang:1.23.2 AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
-
-RUN npm install
-
 COPY . .
 
-EXPOSE 4000
+RUN go mod download
 
-CMD ["node", "index.js"]
+RUN go build -o backend .
+
+EXPOSE 8000
+
+ENTRYPOINT ["go", "run", "commands/server/main.go"]
