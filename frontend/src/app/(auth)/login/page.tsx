@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
 import { useState } from "react";
+//import ;
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
