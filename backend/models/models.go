@@ -35,7 +35,7 @@ type Budget struct {
 	models.Model
 	UserId     uint64    `gorm:"not null" json:"user_id"`              // Foreign key to User
 	CategoryId uint64    `gorm:"not null" json:"category_id"`          // Foreign key to Category
-	Amount     float64   `gorm:"default:0" json:"amount"`              // Budgeted amount
+	Amount     float64   `gorm:"default:0;not null" json:"amount"`     // Budgeted amount
 	StartDate  time.Time `gorm:"type:date;not null" json:"start_date"` // Budget start date
 	EndDate    time.Time `gorm:"type:date;not null" json:"end_date"`   // Budget end date
 }
