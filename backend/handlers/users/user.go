@@ -1,9 +1,9 @@
-package handlers
+package users
 
 import (
 	"backend/config"
 	"backend/models"
-	"backend/serializers"
+	"backend/serializers/users"
 	"backend/utils/commonutils"
 	"backend/utils/dbService"
 	baseModels "backend/utils/models"
@@ -17,7 +17,7 @@ import (
 
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// request serializer
-	var request serializers.UserCreateSerializer
+	var request users.UserCreateSerializer
 	err := validation.ValidateRequest(w, r, &request)
 	if err != nil {
 		logrus.Error(err)
@@ -96,6 +96,73 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	// return http response
 	response := commonutils.Response{
 		Message: "success",
+		Data:    user,
+	}
+
+	if err = commonutils.HTTPResponse(w, response, http.StatusOK); err != nil {
+		logrus.Error(err)
+		http.Error(w, "Error writing http response", http.StatusInternalServerError)
+	}
+}
+
+func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
+	userId, ok := commonutils.GetUserIdFromContext(r.Context())
+	if !ok {
+		logrus.Error("User id not found")
+		return
+	}
+
+	// check if userId is valid
+	userIdUrl := mux.Vars(r)["userId"]
+
+	// validate request body
+	var request users.UserUpdateRequest
+	err := validation.ValidateRequest(w, r, &request)
+	if err != nil {
+		logrus.Error(err)
+		http.Error(w, "invalid field(s)", http.StatusBadRequest)
+	}
+
+	isValid, err := commonutils.CompareUserIds(userIdUrl, userId)
+	if err != nil || !isValid {
+		logrus.Error(err)
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+	}
+
+	// check if username, email or password is provided
+	var model models.User
+	if request.Username != "" {
+		model.Username = request.Username
+
+	} else if request.Email != "" {
+		model.Email = request.Email
+
+	} else if request.Password != "" {
+		// hash password
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+		if err != nil {
+			logrus.Error(err)
+			return
+		}
+		model.Password = hashedPassword
+	} else {
+		logrus.Error("All fields are empty")
+		http.Error(w, "Fill in at least one field", http.StatusBadRequest)
+	}
+
+	// condition for update
+	condition := &models.User{Model: baseModels.Model{Id: userIdUrl}}
+	sv := dbService.DBService{DB: config.DB}
+
+	// check if user exists then update
+	user, err := sv.UpdateAndGet(r.Context(), model, condition)
+	if err != nil {
+		logrus.Error(err)
+		http.Error(w, "error updating user", http.StatusInternalServerError)
+	}
+
+	response := commonutils.Response{
+		Message: "user updated successfully",
 		Data:    user,
 	}
 

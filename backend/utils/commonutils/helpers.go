@@ -3,7 +3,9 @@ package commonutils
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -35,4 +37,18 @@ func HTTPResponse(w http.ResponseWriter, response Response, statusCode int) erro
 func GetUserIdFromContext(ctx context.Context) (string, bool) {
 	userID, ok := ctx.Value("userId").(string)
 	return userID, ok
+}
+
+func CompareUserIds(urlUserId, userId string) (bool, error) {
+	if urlUserId == "" {
+		logrus.Error("User id cannot be empty")
+		return false, errors.New("user id cannot be empty")
+	}
+
+	// check if the url param userId and the one in the context are the same
+	if urlUserId != userId {
+		logrus.Error("User id does not match")
+		return false, errors.New("user id does not match")
+	}
+	return true, nil
 }
