@@ -3,7 +3,7 @@ package auth
 import (
 	"backend/config"
 	"backend/models"
-	"backend/serializers"
+	"backend/serializers/users"
 	"backend/utils/auth"
 	"backend/utils/commonutils"
 	"backend/utils/dbService"
@@ -14,7 +14,7 @@ import (
 
 func AuthLoginHandler(w http.ResponseWriter, r *http.Request) {
 	// validate login request
-	var request serializers.UserLoginRequest
+	var request users.UserLoginRequest
 	err := validation.ValidateRequest(w, r, &request)
 	if err != nil {
 		logrus.Error(err)
@@ -71,7 +71,7 @@ func AuthLoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// return success response
-		responseData := serializers.UserLoginResponse{
+		responseData := users.UserLoginResponse{
 			Token:    token,
 			UserData: user,
 		}
