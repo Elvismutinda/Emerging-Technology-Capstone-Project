@@ -28,38 +28,43 @@ services:
     networks:
       - app-network
 
-  # backend:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     - DATABASE_URL=postgresql://postgres:password@db:5432/mydatabase
-  #   expose:
-  #     - "4000"
-  #   networks:
-  #     - app-network
-  #   depends_on:
-  #     - db
-  
-  # db:
-  #   image: postgres:15-alpine
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: password
-  #     POSTGRES_DB: mydatabase
-  #   volumes:
-  #     - db_data:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #   networks:
-  #     - app-network
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - DB_URL=${DB_URL}
+    ports:
+      - PORT=${PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
 
 networks:
   app-network:
     driver: bridge
 
-# volumes:
-#   db_data:
+volumes:
+  db_data:
