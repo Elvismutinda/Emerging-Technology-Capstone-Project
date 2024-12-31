@@ -4,7 +4,6 @@ import (
 	"backend/config"
 	"backend/routes"
 	"fmt"
-	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"log"
 	"net/http"
@@ -15,16 +14,11 @@ type Server struct {
 	Router        *routes.Router
 }
 
-// New Router
-func NewRouter() *routes.Router {
-	return &routes.Router{Router: mux.NewRouter()}
-}
-
 // NewServer ...
 func NewServer(config *config.LocalConfig) *Server {
 	server := &Server{
 		Configuration: config,
-		Router:        NewRouter(),
+		Router:        routes.NewRouter(),
 	}
 
 	return server
@@ -50,7 +44,7 @@ func main() {
 		return
 	}
 	server := NewServer(localCfg)
-	server.Router.RegisterRoutes(localCfg)
+	server.Router.InitializeRoutes(localCfg)
 
 	var handler http.Handler
 	handler = server.Router.Router

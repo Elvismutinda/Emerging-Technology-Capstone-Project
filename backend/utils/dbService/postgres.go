@@ -25,7 +25,7 @@ func (service *DBService) Create(ctx context.Context, model interface{}, conditi
 	return model, nil
 }
 
-func (service *DBService) Get(ctx context.Context, model interface{}, condition interface{}) (interface{}, error) {
+func (service *DBService) Get(ctx context.Context, condition interface{}) (interface{}, error) {
 	tx := service.DB.WithContext(ctx).Begin()
 	if tx.Error != nil {
 		return nil, tx.Error
@@ -33,10 +33,10 @@ func (service *DBService) Get(ctx context.Context, model interface{}, condition 
 	defer tx.Commit()
 
 	// get or create a new record
-	if err := tx.Where(condition).First(model).Error; err != nil {
+	if err := tx.Where(condition).First(condition).Error; err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 
-	return model, nil
+	return condition, nil
 }

@@ -2,7 +2,8 @@ package routes
 
 import (
 	"backend/config"
-	"backend/handlers"
+	"backend/routes/auth"
+	"backend/routes/user"
 	"github.com/gorilla/mux"
 )
 
@@ -10,7 +11,12 @@ type Router struct {
 	Router *mux.Router
 }
 
-func (r *Router) RegisterRoutes(cfg *config.LocalConfig) {
-	userRoutes := r.Router.PathPrefix("/user").Subrouter()
-	userRoutes.HandleFunc("/create", handlers.CreateUserHandler).Methods("POST")
+func NewRouter() *Router {
+	return &Router{Router: mux.NewRouter()}
+}
+
+func (r *Router) InitializeRoutes(cfg *config.LocalConfig) {
+	// initialize routes
+	auth.RegisterRoutes(cfg, (*auth.Router)(r))
+	user.RegisterRoutes(cfg, (*user.Router)(r))
 }
