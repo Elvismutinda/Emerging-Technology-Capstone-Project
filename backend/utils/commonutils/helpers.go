@@ -1,6 +1,7 @@
 package commonutils
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/google/uuid"
 	"net/http"
@@ -29,4 +30,9 @@ func HTTPResponse(w http.ResponseWriter, response Response, statusCode int) erro
 	}
 
 	return nil
+}
+
+func GetUserIdFromContext(ctx context.Context) (string, bool) {
+	userID, ok := ctx.Value("userId").(string)
+	return userID, ok
 }
