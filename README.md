@@ -31,5 +31,5 @@ docker compose down
 > To start the application again, run:
 
 ```
-docker compose up -d
+docker compose --env-file backend/.env up -d
 ```
