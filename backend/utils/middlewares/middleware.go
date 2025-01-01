@@ -25,6 +25,7 @@ func AuthenticateUserMiddleware(cfg *config.LocalConfig) func(http.Handler) http
 			if err != nil {
 				logrus.Error(err)
 				http.Error(w, "Invalid token", http.StatusUnauthorized)
+				return
 			}
 
 			// validate token
@@ -32,6 +33,7 @@ func AuthenticateUserMiddleware(cfg *config.LocalConfig) func(http.Handler) http
 			if err != nil {
 				logrus.Error(err)
 				http.Error(w, err.Error(), http.StatusUnauthorized)
+				return
 			}
 
 			// validate if userId in the header is the same one in the token

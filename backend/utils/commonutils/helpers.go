@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 type Response struct {
@@ -51,4 +53,57 @@ func CompareUserIds(urlUserId, userId string) (bool, error) {
 		return false, errors.New("user id does not match")
 	}
 	return true, nil
+}
+
+func GetPaginationParams(page, pageSize string) (int, int) {
+	var pageParam, pageSizeParam int
+	// Parse and validate page and page_size
+	if p, err := strconv.Atoi(page); err == nil && p > 0 {
+		pageParam = p
+	}
+	if ps, err := strconv.Atoi(pageSize); err == nil && ps > 0 {
+		pageSizeParam = ps
+	}
+
+	return pageParam, pageSizeParam
+}
+
+func ExtractDatesFromUrl(r *http.Request) (*time.Time, *time.Time, error) {
+	// Extract start and end dates from URL query params
+	startDateStr := r.URL.Query().Get("start_date")
+	endDateStr := r.URL.Query().Get("end_date")
+
+	// check if empty
+	if startDateStr == "" {
+		startDateStr = time.Now().Format("2006-01-02")
+	}
+
+	if endDateStr == "" {
+		endDateStr = time.Now().Format("2006-01-02")
+	}
+
+	// Define the date format
+	const dateFormat = "2006-01-02"
+
+	// Parse the start date
+	startDate, err := time.Parse(dateFormat, startDateStr)
+	if err != nil {
+		logrus.Errorf("Error parsing start date: %v", err)
+		return nil, nil, errors.New("invalid start date format, expected YYYY-MM-DD")
+	}
+
+	// Parse the end date
+	endDate, err := time.Parse(dateFormat, endDateStr)
+	if err != nil {
+		logrus.Errorf("Error parsing end date: %v", err)
+		return nil, nil, errors.New("invalid end date format, expected YYYY-MM-DD")
+	}
+
+	// check if start date is less than end date
+	if startDate.After(endDate) {
+		return nil, nil, errors.New("start date must be after end date")
+	}
+
+	// Return the parsed dates
+	return &startDate, &endDate, nil
 }

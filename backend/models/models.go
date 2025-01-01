@@ -28,7 +28,7 @@ type Transaction struct {
 	CategoryId      string          `json:"category_id"` // Foreign key to Category
 	Amount          float64         `json:"amount"`
 	TransactionDate time.Time       `json:"transaction_date"`
-	Type            TransactionType `json:"type"` // "income" or "expense"
+	Type            TransactionType `json:"type"` // "transaction" or "expense"
 	Description     string          `json:"description"`
 }
 
@@ -36,7 +36,7 @@ type Transaction struct {
 type Category struct {
 	models.Model
 	UserId string `gorm:"not null" json:"user_id"` // Foreign key to User
-	Name   string `gorm:"not null" json:"name"`
+	Name   string `gorm:"not null" json:"name" gorm:"uniqueIndex:idx_category_name" `
 }
 
 // Budget Model
