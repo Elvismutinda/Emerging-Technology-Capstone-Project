@@ -9,7 +9,7 @@ This is a group project for building a multi-container application using Docker.
 2. Spin up the docker containers
 
 ```
-docker compose up --build -d
+docker compose --env-file ./backend/.env up --build -d
 ```
 
 3. To check logs
