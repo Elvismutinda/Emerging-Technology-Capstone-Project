@@ -42,7 +42,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		Password: hashedPassword,
 	}
 
-	createdUser, err := sv.Create(r.Context(), condition, condition)
+	createdUser, err := sv.GetOrCreate(r.Context(), condition, condition)
 	if err != nil {
 		logrus.Error(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -74,12 +74,14 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	if userIdUrl == "" {
 		logrus.Error("User id cannot be empty")
 		http.Error(w, "url param is empty", http.StatusBadRequest)
+		return
 	}
 
 	// check if the url param userId and the one in the context are the same
 	if userIdUrl != userId {
 		logrus.Error("User id does not match")
 		http.Error(w, "user id does not match", http.StatusBadRequest)
+		return
 	}
 
 	// get user record using user Id
@@ -91,6 +93,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(err)
 		http.Error(w, "User not found", http.StatusInternalServerError)
+		return
 	}
 
 	// return http response
@@ -102,6 +105,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err = commonutils.HTTPResponse(w, response, http.StatusOK); err != nil {
 		logrus.Error(err)
 		http.Error(w, "Error writing http response", http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -121,12 +125,14 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(err)
 		http.Error(w, "invalid field(s)", http.StatusBadRequest)
+		return
 	}
 
 	isValid, err := commonutils.CompareUserIds(userIdUrl, userId)
 	if err != nil || !isValid {
 		logrus.Error(err)
 		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return
 	}
 
 	// check if username, email or password is provided
@@ -148,6 +154,7 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		logrus.Error("All fields are empty")
 		http.Error(w, "Fill in at least one field", http.StatusBadRequest)
+		return
 	}
 
 	// condition for update
@@ -159,6 +166,7 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(err)
 		http.Error(w, "error updating user", http.StatusInternalServerError)
+		return
 	}
 
 	response := commonutils.Response{
@@ -169,5 +177,6 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err = commonutils.HTTPResponse(w, response, http.StatusOK); err != nil {
 		logrus.Error(err)
 		http.Error(w, "Error writing http response", http.StatusInternalServerError)
+		return
 	}
 }
