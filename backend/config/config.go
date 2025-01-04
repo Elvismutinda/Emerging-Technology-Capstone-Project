@@ -1,8 +1,10 @@
 package config
 
 import (
+	"database/sql"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -14,6 +16,9 @@ type LocalConfig struct {
 	JWTSecretKey string `required:"true" split_words:"true"`
 	PostgresDSN  string `required:"true" split_words:"true"`
 	Port         string `required:"true" split_words:"true"`
+	DBHost       string `required:"false" split_words:"true"`
+	Environment  string `required:"false" split_words:"true"`
+	DockerDSN    string `required:"false" split_words:"true"`
 }
 
 func FromEnv() (cfg *LocalConfig, err error) {
@@ -38,8 +43,9 @@ func fromFileToEnv() {
 	}
 }
 
-func ConnectDB() {
-	err := godotenv.Load()
+func ConnectDB() (db *gorm.DB, err error) {
+	// get env variables
+	err = godotenv.Load()
 	if err != nil {
 		logrus.Error("Error loading .env file", err)
 	}
@@ -47,15 +53,38 @@ func ConnectDB() {
 	localCfg, err := FromEnv()
 	if err != nil {
 		logrus.Error(err)
-		return
+		return nil, err
 	}
 
 	dsn := localCfg.PostgresDSN
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		logrus.Error("Error connecting to database", err)
+	if localCfg.Environment == "docker" {
+		dsn = localCfg.DockerDSN // use docker's dsn where hostname is the db container name
 	}
+
+	// Connect to the database
+	sqlDB, err := sql.Open("postgres", dsn)
+	if err != nil {
+		logrus.Fatalf("Error opening database: %v", err)
+		return nil, err
+	}
+
+	// Ping the database to ensure connectivity
+	err = sqlDB.Ping()
+	if err != nil {
+		logrus.Fatalf("Error pinging database: %v", err)
+		return nil, err
+	}
+
+	db, err = gorm.Open(postgres.New(postgres.Config{
+		Conn: sqlDB,
+	}), &gorm.Config{})
+	if err != nil {
+		logrus.Fatalf("Error initializing GORM with *sql.DB: %v", err)
+		return nil, err
+	}
+
+	// Assign db to global DB variable
 	DB = db
-	logrus.Info("Connected to database")
+	return db, nil
 }

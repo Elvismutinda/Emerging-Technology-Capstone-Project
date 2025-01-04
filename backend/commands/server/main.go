@@ -5,7 +5,6 @@ import (
 	"backend/routes"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"log"
 	"net/http"
 )
 
@@ -26,16 +25,12 @@ func NewServer(config *config.LocalConfig) *Server {
 
 func main() {
 	// connect DB
-	config.ConnectDB()
-
-	// ping DB
-	db, err := config.DB.DB()
+	_, err := config.ConnectDB()
 	if err != nil {
-		log.Fatal("Error getting database instance:", err)
+		logrus.Fatal(err)
+		return
 	}
-	if err := db.Ping(); err != nil {
-		log.Fatal("Failed to ping database:", err)
-	}
+	logrus.Infoln("Connected to database")
 
 	// Continue with other setups like routes
 	localCfg, err := config.FromEnv()
