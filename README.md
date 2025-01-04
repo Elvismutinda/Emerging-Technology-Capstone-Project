@@ -9,7 +9,9 @@ This is a group project for building a multi-container application using Docker.
 2. Spin up the docker containers
 
 ```
-docker compose --env-file ./backend/.env up --build -d
+docker compose build
+
+docker compose up
 ```
 
 3. To check logs
@@ -31,5 +33,5 @@ docker compose down
 > To start the application again, run:
 
 ```
-docker compose --env-file backend/.env up -d
+docker compose up 
 ```

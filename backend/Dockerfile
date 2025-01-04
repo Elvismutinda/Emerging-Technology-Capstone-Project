@@ -6,10 +6,14 @@ COPY . .
 
 RUN go mod download
 
-RUN go build -o /app/backend commands/server/main.go
+# install the dependencies
+RUN go get -v ./...
 
-# Expose the port the app will run on
+RUN go mod tidy
+
+RUN go build -o app/backend/commands/server ./commands/server/main.go
+
 EXPOSE 8000
 
 # Start the application by running the compiled binary
-ENTRYPOINT ["/app/backend"]
+ENTRYPOINT ["app/backend/commands/server"]
