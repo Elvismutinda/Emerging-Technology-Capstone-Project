@@ -18,7 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { PlusSquare } from "lucide-react";
+import { Loader2, PlusSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Form,
@@ -28,6 +28,8 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
+import { toast } from "sonner";
 
 interface Props {
   type: TransactionType;
@@ -40,8 +42,39 @@ function CreateCategoryDialog({ type, trigger }: Props) {
     resolver: zodResolver(CreateCategorySchema),
     defaultValues: {
       type,
+      name: "",
     },
   });
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleCreateCategory = async (data: CreateCategoryRequest) => {
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/category",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      console.log("Response ", response);
+
+      toast.success("Category created successfully");
+
+      setOpen(false);
+      form.reset();
+    } catch (error) {
+      console.error("Error creating category", error);
+      toast.error("Failed to create the category.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -74,7 +107,10 @@ function CreateCategoryDialog({ type, trigger }: Props) {
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-8">
+          <form
+            className="space-y-8"
+            onSubmit={form.handleSubmit(handleCreateCategory)}
+          >
             <FormField
               control={form.control}
               name="name"
@@ -82,7 +118,11 @@ function CreateCategoryDialog({ type, trigger }: Props) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} defaultValue={""} />
+                    <Input
+                      {...field}
+                      placeholder="Enter category name"
+                      defaultValue={""}
+                    />
                   </FormControl>
                   {/* <FormDescription>
                     Transaction description (optional)
@@ -90,22 +130,25 @@ function CreateCategoryDialog({ type, trigger }: Props) {
                 </FormItem>
               )}
             />
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    form.reset();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button type="submit" disabled={isLoading}>
+                Save
+                {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+              </Button>
+            </DialogFooter>
           </form>
         </Form>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => {
-                form.reset();
-              }}
-            >
-              Cancel
-            </Button>
-          </DialogClose>
-          <Button>Save</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

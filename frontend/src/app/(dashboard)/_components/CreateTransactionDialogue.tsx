@@ -36,9 +36,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
+import axios from "axios";
+import { toast } from "sonner";
 
 interface Props {
   trigger: ReactNode;
@@ -53,6 +55,36 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
       type,
     },
   });
+
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  const handleCreateTransaction = async (data: CreateTransactionRequest) => {
+    setIsLoading(true);
+
+    console.log(data);
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/transaction/create/${type}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      console.log(response.data);
+
+      toast.success("Transaction created successfully");
+      form.reset();
+    } catch (error) {
+      console.error("Error creating transaction", error);
+      toast.error("Failed to create transaction.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -72,7 +104,10 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-4">
+          <form
+            className="space-y-4"
+            onSubmit={form.handleSubmit(handleCreateTransaction)}
+          >
             <FormField
               control={form.control}
               name="description"
@@ -175,7 +210,13 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
               Cancel
             </Button>
           </DialogClose>
-          <Button>Save</Button>
+          <Button
+            onClick={form.handleSubmit(handleCreateTransaction)}
+            disabled={isLoading}
+          >
+            Save
+            {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
