@@ -4,6 +4,7 @@ import (
 	"backend/config"
 	"backend/routes"
 	"fmt"
+	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 	"net/http"
 )
@@ -41,8 +42,15 @@ func main() {
 	server := NewServer(localCfg)
 	server.Router.InitializeRoutes(localCfg)
 
+	// add cors configuration
+	c := cors.New(cors.Options{
+		AllowedHeaders: []string{"tenant", "*"},
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "UPDATE", "OPTIONS", "DELETE", "PATCH"},
+	})
+
 	var handler http.Handler
-	handler = server.Router.Router
+	handler = c.Handler(server.Router.Router)
 
 	logrus.Infoln("Starting server on Port", localCfg.Port)
 	err = http.ListenAndServe(fmt.Sprintf("%v:%v", "", localCfg.Port),
