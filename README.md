@@ -11,7 +11,7 @@ This is a group project for building a multi-container application using Docker.
 ```
 docker compose build
 
-docker compose up
+docker compose up -d
 ```
 
 3. To check logs
