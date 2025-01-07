@@ -10,7 +10,7 @@ import Logo from "./Logo";
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  async function handleLogin(e) {
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
   }

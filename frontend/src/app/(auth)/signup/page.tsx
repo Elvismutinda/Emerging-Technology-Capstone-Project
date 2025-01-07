@@ -1,4 +1,11 @@
+import { Metadata } from "next";
+
 import RegisterForm from "@/components/RegisterForm";
+
+export const metadata: Metadata = {
+  title: "Sign up",
+  description: "Create an account",
+};
 
 const SignupPage = () => {
   return (

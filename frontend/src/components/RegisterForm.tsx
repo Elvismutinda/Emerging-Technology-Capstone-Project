@@ -10,7 +10,7 @@ import Logo from "./Logo";
 const RegisterForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
   }
