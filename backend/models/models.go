@@ -28,7 +28,7 @@ type Transaction struct {
 	CategoryId      string          `json:"category_id"` // Foreign key to Category
 	Amount          float64         `json:"amount"`
 	TransactionDate time.Time       `json:"transaction_date"`
-	Type            TransactionType `json:"type"` // "transaction" or "expense"
+	Type            TransactionType `json:"type"` // "income" or "expense"
 	Description     string          `json:"description"`
 }
 

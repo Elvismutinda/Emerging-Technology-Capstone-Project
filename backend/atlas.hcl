@@ -8,7 +8,7 @@ data "external_schema" "gorm" {
 env "gorm" {
   src = data.external_schema.gorm.url
   dev = "docker://postgres/15/dev"
-  url = "postgres://postgres:1234567@localhost:5432/test_db?search_path=public&sslmode=disable"
+  url = "postgres://postgres:password123@localhost:5432/budget_tracker?search_path=public&sslmode=disable"
   migration {
     dir = "file://migrations"
   }
