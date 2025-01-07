@@ -23,8 +23,8 @@ const items = [
   { label: "Dashboard", link: "/" },
   { label: "Transactions", link: "/transactions" },
   { label: "Manage", link: "/manage" },
-  { label: "Login", link: "/login" },
-  { label: "Signup", link: "/signup" },
+  // { label: "Login", link: "/login" },
+  // { label: "Signup", link: "/signup" },
 ];
 
 function MobileNavbar() {
