@@ -46,7 +46,7 @@ function CategoriesCard({
           No data for the selected period
           <p className="text-sm text-muted-foreground">
             Try selecting a different period or try adding new{" "}
-            {type === "income" ? "transactions" : "expenses"}
+            {type === "income" ? "income" : "expense"}
           </p>
         </div>
       </div>
