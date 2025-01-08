@@ -21,7 +21,7 @@ function CategoryList({ type }: { type: TransactionType }) {
     queryKey: ["categories", type],
     queryFn: async () => {
       const response = await axios.get(
-        `http://localhost:8000/category/${type}`,
+        `http://localhost:8000/category/type/${type}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

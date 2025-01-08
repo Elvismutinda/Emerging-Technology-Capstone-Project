@@ -15,20 +15,20 @@ function page() {
           </div>
         </div>
       </div>
-      <Tabs defaultValue="account" className="container w-full pt-2">
+      <Tabs defaultValue="categories" className="container w-full pt-2">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="categories">Categories</TabsTrigger>
+          <TabsTrigger value="account">Account</TabsTrigger>
         </TabsList>
-        <TabsContent value="account">
-          <div className="container flex p-4">
-            {/* <AccountDetails /> */}
-          </div>
-        </TabsContent>
         <TabsContent value="categories">
           <div className="container flex flex-col gap-4 p-4">
             <CategoryList type="income" />
             <CategoryList type="expense" />
+          </div>
+        </TabsContent>
+        <TabsContent value="account">
+          <div className="container flex p-4">
+            {/* <AccountDetails /> */}
           </div>
         </TabsContent>
       </Tabs>

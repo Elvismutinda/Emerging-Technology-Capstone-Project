@@ -23,3 +23,13 @@ const useCurrentUser = () => {
 };
 
 export default useCurrentUser;
+
+// const useCurrentUser = () => {
+//   const token = getCookie("authToken") as string | null;
+//   const userData = getCookie("userData");
+
+//   const isAuthenticated = Boolean(token && userData);
+//   const user = userData ? JSON.parse(userData as string) : null;
+
+//   return { isAuthenticated, user, token };
+// };

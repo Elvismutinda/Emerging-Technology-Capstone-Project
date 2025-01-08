@@ -25,6 +25,7 @@ import { DataTableColumnHeader } from "@/components/datatable/ColumnHeader";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import useCurrentUser from "@/hooks/use-current-user";
 
 interface Props {
   from: Date;
@@ -110,6 +111,9 @@ const columns: ColumnDef<TransactionHistoryRow>[] = [
 ];
 
 function TransactionTable({ from, to }: Props) {
+  const { token, user } = useCurrentUser();
+  const userId = user?.id;
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const history = useQuery({
     queryKey: ["transactions", "history", from, to],
@@ -120,6 +124,10 @@ function TransactionTable({ from, to }: Props) {
           params: {
             from: from.toISOString(),
             to: to.toISOString(),
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "userId": userId,
           },
         }
       );

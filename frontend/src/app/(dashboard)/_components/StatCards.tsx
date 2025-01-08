@@ -2,6 +2,7 @@
 
 import SkeletonWrapper from "@/components/SkeletonWrapper";
 import { Card } from "@/components/ui/card";
+import useCurrentUser from "@/hooks/use-current-user";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
@@ -14,6 +15,9 @@ interface Props {
 }
 
 function StatCards({ from, to }: Props) {
+  const { token, user } = useCurrentUser();
+  const userId = user?.id;
+
   const statsQuery = useQuery({
     queryKey: ["overview", "stats", from, to],
     queryFn: async () => {
@@ -24,6 +28,10 @@ function StatCards({ from, to }: Props) {
             from: from.toISOString(),
             to: to.toISOString(),
           },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "userId": userId,
+          }
         }
       );
       return response.data;
