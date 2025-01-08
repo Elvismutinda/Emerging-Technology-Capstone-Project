@@ -14,7 +14,8 @@ import axios from "axios";
 import useCurrentUser from "@/hooks/use-current-user";
 
 function CategoryList({ type }: { type: TransactionType }) {
-  const { token } = useCurrentUser();
+  const { token, user } = useCurrentUser();
+  const userId = user?.id;
 
   const categoriesQuery = useQuery({
     queryKey: ["categories", type],
@@ -24,6 +25,7 @@ function CategoryList({ type }: { type: TransactionType }) {
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "userId": userId,
           },
         }
       );
@@ -37,7 +39,7 @@ function CategoryList({ type }: { type: TransactionType }) {
     <SkeletonWrapper isLoading={categoriesQuery.isLoading}>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between gap-2">
+          <CardTitle className="flex flex-col sm:flex-row items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               {type === "expense" ? (
                 <TrendingDown className="h-12 w-12 items-center rounded-lg bg-rose-400/10 text-rose-500 p-2" />

@@ -30,7 +30,6 @@ import {
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { toast } from "sonner";
-import useUserId, {  } from "@/hooks/use-user-id";
 import useCurrentUser from "@/hooks/use-current-user";
 
 interface Props {
@@ -39,8 +38,8 @@ interface Props {
 }
 
 function CreateCategoryDialog({ type, trigger }: Props) {
-  const { token } = useCurrentUser();
-  const userId = useUserId();
+  const { token, user } = useCurrentUser();
+  const userId = user?.id;
 
   const [open, setOpen] = useState(false);
   const form = useForm<CreateCategoryRequest>({
@@ -63,7 +62,7 @@ function CreateCategoryDialog({ type, trigger }: Props) {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "X-User-Id": userId,
+            "userId": userId,
           },
         }
       );

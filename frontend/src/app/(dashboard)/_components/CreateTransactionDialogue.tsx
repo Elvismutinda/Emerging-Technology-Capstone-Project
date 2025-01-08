@@ -49,7 +49,8 @@ interface Props {
 }
 
 function CreateTransactionDialogue({ trigger, type }: Props) {
-  const { token } = useCurrentUser();
+  const { token, user } = useCurrentUser();
+  const userId = user?.id;
 
   const form = useForm<CreateTransactionRequest>({
     resolver: zodResolver(CreateTransactionSchema),
@@ -73,6 +74,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "userId": userId,
           },
         }
       );

@@ -17,22 +17,32 @@ import {
 } from "@/components/ui/command";
 import CreateCategoryDialog from "./CreateCategoryDialog";
 import axios from "axios";
+import useCurrentUser from "@/hooks/use-current-user";
 
 interface Props {
   type: TransactionType;
 }
 
 function CategoryPicker({ type }: Props) {
+  const { token, user } = useCurrentUser();
+  const userId = user?.id;
+
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
   const categoryQuery = useQuery({
     queryKey: ["categories", type],
     queryFn: async () => {
       const response = await axios.get(
-        `http://localhost:8000/category/type/${type}`
+        `http://localhost:8000/category/type/${type}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "userId": userId,
+          },
+        }
       );
 
-      return response.data;
+      return response.data.data || [];
     },
     staleTime: 1000 * 60 * 5,
   });

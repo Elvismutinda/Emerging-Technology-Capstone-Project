@@ -62,7 +62,7 @@ function MobileNavbar({ user }: { user: any }) {
         </div>
         <div className="flex items-center gap-2">
           <ThemeSwitcherBtn />
-          {/* <UserAccountNav user={user} /> */}
+          <UserAccountNav user={user} />
         </div>
       </nav>
     </div>
