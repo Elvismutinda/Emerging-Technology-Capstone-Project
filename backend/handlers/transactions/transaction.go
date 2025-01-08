@@ -46,6 +46,7 @@ func CreateTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	// get or create category
 	conditionCategory := &models.Category{
 		Name: request.Category,
+		Type: models.TransactionType(transactionType),
 	}
 	category, err := sv.GetOrCreate(r.Context(), conditionCategory, conditionCategory)
 	if err != nil {
@@ -253,6 +254,7 @@ func UpdateTransactionHandler(w http.ResponseWriter, r *http.Request) {
 		// get or create category
 		conditionCategory := &models.Category{
 			Name: request.Category,
+			Type: models.TransactionType(request.Type),
 		}
 
 		category, err := sv.GetOrCreate(r.Context(), conditionCategory, conditionCategory)
