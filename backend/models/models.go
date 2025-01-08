@@ -35,8 +35,9 @@ type Transaction struct {
 // Category Model
 type Category struct {
 	models.Model
-	UserId string `gorm:"not null" json:"user_id"` // Foreign key to User
-	Name   string `gorm:"not null" json:"name" gorm:"uniqueIndex:idx_category_name" `
+	UserId string          `gorm:"not null" json:"user_id"` // Foreign key to User
+	Name   string          `gorm:"not null" json:"name" gorm:"uniqueIndex:idx_category_name" `
+	Type   TransactionType `gorm:"not null" json:"type" `
 }
 
 // Budget Model
