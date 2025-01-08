@@ -204,6 +204,69 @@ func GetPaginatedCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetPaginatedCategoriesByCategoryTypeHandler(w http.ResponseWriter, r *http.Request) {
+	userId, ok := commonutils.GetUserIdFromContext(r.Context())
+	if !ok {
+		logrus.Error("userId is empty")
+		return
+	}
+
+	// get category Type
+	categoryType := mux.Vars(r)["categoryType"]
+
+	if categoryType == "" {
+		logrus.Error("category type is empty")
+		http.Error(w, "category type is empty", http.StatusBadRequest)
+		return
+	}
+
+	// get pagination params
+	pageParam := r.URL.Query().Get("page")
+	pageSizeParam := r.URL.Query().Get("page_size")
+
+	// assign default pagination param values
+	var page, pageSize int
+	if pageParam == "" && pageSizeParam == "" {
+		page = 1
+		pageSize = 10
+	} else {
+		page, pageSize = commonutils.GetPaginationParams(pageParam, pageSizeParam)
+	}
+
+	// get categories
+	condition := &models.Category{
+		UserId: userId,
+		Type:   models.TransactionType(categoryType),
+	}
+
+	sv := dbService.DBService{DB: config.DB}
+	categories, err := sv.GetPaginated(r.Context(), condition, page, pageSize)
+	if err != nil {
+		logrus.Error(err)
+
+		// check if its a record not found error
+		if err.Error() == gorm.ErrRecordNotFound.Error() {
+			http.Error(w, "category not found", http.StatusNotFound)
+			return
+		}
+
+		http.Error(w, "error retrieving category", http.StatusInternalServerError)
+		return
+	}
+
+	// return response
+	response := commonutils.Response{
+		Message: "success",
+		Data:    categories,
+	}
+
+	if err = commonutils.HTTPResponse(w, response, http.StatusOK); err != nil {
+		logrus.Error(err)
+		http.Error(w, "Error writing http response", http.StatusInternalServerError)
+		return
+	}
+}
+
 func UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// get user id
 	userId, ok := commonutils.GetUserIdFromContext(r.Context())
@@ -236,8 +299,19 @@ func UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		UserId: userId,
 	}
 
-	model := &models.Category{
-		Name: request.Name,
+	var model models.Category
+	if request.Name == "" && request.CategoryType == "" {
+		logrus.Error("all request fields are empty")
+		http.Error(w, "all request fields are empty", http.StatusBadRequest)
+		return
+	}
+
+	if request.Name != "" {
+		model.Name = request.Name
+	}
+
+	if request.CategoryType != "" {
+		model.Type = models.TransactionType(request.CategoryType)
 	}
 
 	sv := dbService.DBService{DB: config.DB}

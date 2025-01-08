@@ -20,6 +20,7 @@ func RegisterRoutes(cfg *config.LocalConfig, r *Router) {
 	categoryRoutes.HandleFunc("", categories.GetPaginatedCategoriesHandler).Methods(http.MethodGet)
 	categoryRoutes.HandleFunc("/{categoryId}", categories.GetCategoryByIdHandler).Methods(http.MethodGet)
 	categoryRoutes.HandleFunc("/name/{categoryName}", categories.GetCategoryByNameHandler).Methods(http.MethodGet)
+	categoryRoutes.HandleFunc("/type/{categoryType}", categories.GetPaginatedCategoriesByCategoryTypeHandler).Methods(http.MethodGet)
 	categoryRoutes.HandleFunc("/{categoryId}", categories.UpdateCategoryHandler).Methods(http.MethodPatch)
 	categoryRoutes.HandleFunc("/{categoryId}", categories.DeleteCategoryHandler).Methods(http.MethodDelete)
 
