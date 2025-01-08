@@ -1,7 +1,6 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CategoryList from "./_components/CategoryList";
 import { TabsContent } from "@radix-ui/react-tabs";
-import AccountDetails from "./_components/AccountDetails";
 
 function page() {
   return (
