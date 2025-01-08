@@ -2,6 +2,8 @@
 
 import SkeletonWrapper from "@/components/SkeletonWrapper";
 import { Card } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { ReactNode } from "react";
 import CountUp from "react-countup";
@@ -12,11 +14,32 @@ interface Props {
 }
 
 function StatCards({ from, to }: Props) {
+  const statsQuery = useQuery({
+    queryKey: ["overview", "stats", from, to],
+    queryFn: async () => {
+      const response = await axios.get(
+        `http://localhost:8000/transaction/get-overview`,
+        {
+          params: {
+            from: from.toISOString(),
+            to: to.toISOString(),
+          },
+        }
+      );
+      return response.data;
+    },
+  });
+
+  const income = statsQuery.data?.income || 0;
+  const expense = statsQuery.data?.expense || 0;
+  const balance = income - expense;
+
   return (
     <div className="relative flex w-full flex-wrap gap-2 md:flex-nowrap">
       <SkeletonWrapper isLoading={false}>
         <StatCard
-          value={1000}
+          currency="Ksh"
+          value={income}
           title="Income"
           icon={
             <TrendingUp className="h-12 w-12 items-center rounded-lg p-2 text-emerald-500 bg-emerald-400/10" />
@@ -26,7 +49,8 @@ function StatCards({ from, to }: Props) {
 
       <SkeletonWrapper isLoading={false}>
         <StatCard
-          value={1000}
+          currency="Ksh"
+          value={expense}
           title="Expense"
           icon={
             <TrendingDown className="h-12 w-12 items-center rounded-lg p-2 text-rose-500 bg-rose-400/10" />
@@ -36,7 +60,8 @@ function StatCards({ from, to }: Props) {
 
       <SkeletonWrapper isLoading={false}>
         <StatCard
-          value={1000}
+          currency="Ksh"
+          value={balance}
           title="Balance"
           icon={
             <Wallet className="h-12 w-12 items-center rounded-lg p-2 text-violet-500 bg-violet-400/10" />
@@ -50,10 +75,12 @@ function StatCards({ from, to }: Props) {
 export default StatCards;
 
 function StatCard({
+  currency,
   value,
   title,
   icon,
 }: {
+  currency: string;
   value: number;
   title: string;
   icon: ReactNode;
@@ -68,6 +95,7 @@ function StatCard({
           redraw={false}
           end={value}
           decimals={2}
+          formattingFn={(value) => `${currency} ${value}`}
           className="text-2xl"
         />
       </div>

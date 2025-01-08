@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import Overview from "@/app/(dashboard)/_components/Overview";
 
 const Dashboard = () => {
-  const { isAuthenticated, user } = useCurrentUser();
+  const { user } = useCurrentUser();
 
   
   return (

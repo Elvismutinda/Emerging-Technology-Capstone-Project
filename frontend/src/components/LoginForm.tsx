@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { setCookie } from "cookies-next";
 
 const LoginForm = () => {
   const {
@@ -41,8 +42,10 @@ const LoginForm = () => {
 
       // Save token and user data in local storage
       const { token, user_data } = response.data.data;
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("userData", JSON.stringify(user_data));
+      // localStorage.setItem("authToken", token);
+      // localStorage.setItem("userData", JSON.stringify(user_data));
+      setCookie("authToken", token, { maxAge: 60 * 60 * 24 });
+      setCookie("userData", JSON.stringify(user_data), { maxAge: 60 * 60 * 24 });
 
       toast.success(response.data.message);
 

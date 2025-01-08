@@ -9,12 +9,16 @@ import { Button, buttonVariants } from "./ui/button";
 import { ThemeSwitcherBtn } from "./ThemeSwitcherBtn";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Menu } from "lucide-react";
+import useCurrentUser from "@/hooks/use-current-user";
+import { UserAccountNav } from "./UserAccountNav";
 
 function Navbar() {
+  const { user } = useCurrentUser();
+
   return (
     <>
-      <DesktopNavbar />
-      <MobileNavbar />
+      <DesktopNavbar user={user} />
+      <MobileNavbar user={user} />
     </>
   );
 }
@@ -27,7 +31,7 @@ const items = [
   // { label: "Signup", link: "/signup" },
 ];
 
-function MobileNavbar() {
+function MobileNavbar({ user }: { user: any }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -58,14 +62,14 @@ function MobileNavbar() {
         </div>
         <div className="flex items-center gap-2">
           <ThemeSwitcherBtn />
-          {/* <UserAvatar /> */}
+          {/* <UserAccountNav user={user} /> */}
         </div>
       </nav>
     </div>
   );
 }
 
-function DesktopNavbar() {
+function DesktopNavbar({ user }: { user: any }) {
   return (
     <div className="hidden border-separate border-b bg-background md:block">
       <nav className="container flex items-center justify-between px-8">
@@ -83,8 +87,7 @@ function DesktopNavbar() {
         </div>
         <div className="flex items-center gap-2">
           <ThemeSwitcherBtn />
-          {/* TODO: Add the logged in user menu */}
-          {/* <UserAvatar /> */}
+          <UserAccountNav user={user} />
         </div>
       </nav>
     </div>

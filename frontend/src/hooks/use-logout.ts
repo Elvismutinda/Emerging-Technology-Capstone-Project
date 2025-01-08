@@ -1,12 +1,12 @@
+import { deleteCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 
 const useLogout = () => {
   const router = useRouter();
 
   const logout = () => {
-    // Remove token and user data from localStorage
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
+    deleteCookie("authToken");
+    deleteCookie("userData");
 
     router.push("/login");
   };
@@ -20,7 +20,7 @@ export default useLogout;
 
 // const Profile = () => {
 //     const { logout } = useLogout();
-  
+
 //     return (
 //       <div>
 //         <h1>Profile</h1>

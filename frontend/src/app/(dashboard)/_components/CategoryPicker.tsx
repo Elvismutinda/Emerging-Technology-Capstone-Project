@@ -9,8 +9,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Command, CommandInput } from "@/components/ui/command";
+import {
+  Command,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
 import CreateCategoryDialog from "./CreateCategoryDialog";
+import axios from "axios";
 
 interface Props {
   type: TransactionType;
@@ -21,8 +27,14 @@ function CategoryPicker({ type }: Props) {
   const [value, setValue] = React.useState("");
   const categoryQuery = useQuery({
     queryKey: ["categories", type],
-    queryFn: () =>
-      fetch(`/api/categories?type=${type}`).then((res) => res.json()),
+    queryFn: async () => {
+      const response = await axios.get(
+        `http://localhost:8000/category/type/${type}`
+      );
+
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 5,
   });
 
   const selectedCategory = categoryQuery.data?.find(
@@ -50,7 +62,24 @@ function CategoryPicker({ type }: Props) {
             e.preventDefault();
           }}
         >
-          <CommandInput placeholder="Search category..." />
+          <CommandInput
+            placeholder="Search category..."
+            onValueChange={(value) => setValue(value)}
+          />
+          <CommandGroup>
+            {categoryQuery.data?.map((category: any) => (
+              <CommandItem
+                key={category.id}
+                onSelect={() => {
+                  setValue(category.name);
+                  setOpen(false);
+                }}
+                className="w-full text-left"
+              >
+                <CategoryRow category={category} />
+              </CommandItem>
+            ))}
+          </CommandGroup>
           <CreateCategoryDialog type={type} />
         </Command>
       </PopoverContent>

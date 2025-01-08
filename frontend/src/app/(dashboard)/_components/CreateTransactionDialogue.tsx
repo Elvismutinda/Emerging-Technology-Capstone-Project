@@ -41,6 +41,7 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import axios from "axios";
 import { toast } from "sonner";
+import useCurrentUser from "@/hooks/use-current-user";
 
 interface Props {
   trigger: ReactNode;
@@ -48,6 +49,8 @@ interface Props {
 }
 
 function CreateTransactionDialogue({ trigger, type }: Props) {
+  const { token } = useCurrentUser();
+
   const form = useForm<CreateTransactionRequest>({
     resolver: zodResolver(CreateTransactionSchema),
     defaultValues: {
@@ -69,7 +72,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
         data,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );

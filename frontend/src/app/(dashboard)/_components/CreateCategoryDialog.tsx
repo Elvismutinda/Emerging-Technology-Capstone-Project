@@ -30,7 +30,8 @@ import {
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { toast } from "sonner";
-import { getUserId } from "@/hooks/get-user-id";
+import useUserId, {  } from "@/hooks/use-user-id";
+import useCurrentUser from "@/hooks/use-current-user";
 
 interface Props {
   type: TransactionType;
@@ -38,7 +39,8 @@ interface Props {
 }
 
 function CreateCategoryDialog({ type, trigger }: Props) {
-  const userId = getUserId();
+  const { token } = useCurrentUser();
+  const userId = useUserId();
 
   const [open, setOpen] = useState(false);
   const form = useForm<CreateCategoryRequest>({
@@ -60,7 +62,7 @@ function CreateCategoryDialog({ type, trigger }: Props) {
         data,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${token}`,
             "X-User-Id": userId,
           },
         }

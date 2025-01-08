@@ -24,6 +24,7 @@ import SkeletonWrapper from "@/components/SkeletonWrapper";
 import { DataTableColumnHeader } from "@/components/datatable/ColumnHeader";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 interface Props {
   from: Date;
@@ -112,10 +113,18 @@ function TransactionTable({ from, to }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const history = useQuery({
     queryKey: ["transactions", "history", from, to],
-    queryFn: () =>
-      fetch(`/api/transactions-history?from=${from}&to=${to}`).then((res) =>
-        res.json()
-      ),
+    queryFn: async () => {
+      const response = await axios.get(
+        "http://localhost:8000/transaction/get-all",
+        {
+          params: {
+            from: from.toISOString(),
+            to: to.toISOString(),
+          },
+        }
+      );
+      return response.data;
+    },
   });
 
   const table = useReactTable({
@@ -132,7 +141,6 @@ function TransactionTable({ from, to }: Props) {
 
   return (
     <div className="w-full py-4">
-
       <SkeletonWrapper isLoading={history.isLoading}>
         <div className="rounded-md border">
           <Table>
