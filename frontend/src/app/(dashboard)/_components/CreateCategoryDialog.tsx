@@ -62,7 +62,7 @@ function CreateCategoryDialog({ type, trigger, successCallback }: Props) {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "userId": userId,
+            userId: userId,
           },
         }
       );
@@ -123,10 +123,7 @@ function CreateCategoryDialog({ type, trigger, successCallback }: Props) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter category name"
-                      {...field}
-                    />
+                    <Input placeholder="Enter category name" {...field} />
                   </FormControl>
                 </FormItem>
               )}

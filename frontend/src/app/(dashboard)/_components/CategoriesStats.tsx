@@ -22,8 +22,8 @@ function CategoriesStats({ from, to }: Props) {
         `http://localhost:8000/transaction/get-category-stats`,
         {
           params: {
-            from: from.toISOString(),
-            to: to.toISOString(),
+            from: from.toUTCString(),
+            to: to.toUTCString(),
           },
         }
       );

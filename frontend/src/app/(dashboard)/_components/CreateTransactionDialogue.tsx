@@ -75,7 +75,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "userId": userId,
+            userId: userId,
           },
         }
       );

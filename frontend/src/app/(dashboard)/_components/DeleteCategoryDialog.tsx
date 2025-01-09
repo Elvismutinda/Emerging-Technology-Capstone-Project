@@ -35,7 +35,7 @@ function DeleteCategoryDialog({ trigger, category }: Props) {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
-            "userId": userId,
+            userId: userId,
           },
         }
       );

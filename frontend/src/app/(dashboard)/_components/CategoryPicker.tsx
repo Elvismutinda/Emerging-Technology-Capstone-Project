@@ -48,14 +48,13 @@ function CategoryPicker({ type, onChange }: Props) {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "userId": userId,
+            userId: userId,
           },
         }
       );
 
       return response.data.data || [];
     },
-    // staleTime: 1000 * 60 * 5,
   });
 
   const selectedCategory = categoriesQuery.data?.find(
@@ -98,14 +97,14 @@ function CategoryPicker({ type, onChange }: Props) {
             onValueChange={(value) => setValue(value)}
           />
           <CreateCategoryDialog type={type} successCallback={successCallback} />
-          <CommandEmpty>
-            <p>Category not found</p>
-            <p className="text-xs text-muted-foreground">
-              Tip: Create a new category
-            </p>
-          </CommandEmpty>
-          <CommandGroup>
-            <CommandList>
+          <CommandList>
+            <CommandEmpty>
+              <p>Category not found</p>
+              <p className="text-xs text-muted-foreground">
+                Tip: Create a new category
+              </p>
+            </CommandEmpty>
+            <CommandGroup>
               {categoriesQuery.data &&
                 categoriesQuery.data.map((category: any) => (
                   <CommandItem
@@ -118,14 +117,14 @@ function CategoryPicker({ type, onChange }: Props) {
                     <CategoryRow category={category} />
                     <Check
                       className={cn(
-                        "mr-2 w-4 h-4 opacity-0",
-                        value === category.name && "opacity-100"
+                        "ml-auto",
+                        value === category.name ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </CommandItem>
                 ))}
-            </CommandList>
-          </CommandGroup>
+            </CommandGroup>
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>

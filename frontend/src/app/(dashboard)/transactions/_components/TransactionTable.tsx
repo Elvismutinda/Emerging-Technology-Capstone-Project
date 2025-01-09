@@ -40,75 +40,11 @@ export type TransactionHistoryRow = {
   updatedAt: Date;
   amount: number;
   description: string;
-  date: Date;
+  transaction_date: Date;
   userId: string;
   type: string;
-  category: string;
+  category_id: string;
 };
-
-const columns: ColumnDef<TransactionHistoryRow>[] = [
-  {
-    accessorKey: "category",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Category" />
-    ),
-    cell: ({ row }) => (
-      <div className="capitalize">{row.original.category}</div>
-    ),
-  },
-  {
-    accessorKey: "description",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Description" />
-    ),
-    cell: ({ row }) => (
-      <div className="capitalize">{row.original.description}</div>
-    ),
-  },
-  {
-    accessorKey: "date",
-    header: "Date",
-    cell: ({ row }) => {
-      const date = new Date(row.original.date);
-      const formattedDate = date.toLocaleDateString("default", {
-        timeZone: "UTC",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
-      <div className="text-muted-foreground">{formattedDate}</div>;
-    },
-  },
-  {
-    accessorKey: "type",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Type" />
-    ),
-    cell: ({ row }) => (
-      <div
-        className={cn(
-          "capitalize rounded-lg text-center p-2",
-          row.original.type === "INCOME" &&
-            "bg-emerald-400/10 text-emerald-500",
-          row.original.type === "EXPENSE" && "bg-rose-400/10 text-rose-500"
-        )}
-      >
-        {row.original.type}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "amount",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Amount" />
-    ),
-    cell: ({ row }) => (
-      <p className="text-md rounded-lg bg-gray-400/5 p-2 text-center font-medium">
-        {row.original.amount}
-      </p>
-    ),
-  },
-];
 
 function TransactionTable({ from, to }: Props) {
   const { token, user } = useCurrentUser();
@@ -122,18 +58,99 @@ function TransactionTable({ from, to }: Props) {
         "http://localhost:8000/transaction/get-all",
         {
           params: {
-            from: from.toISOString(),
-            to: to.toISOString(),
+            from: from.toUTCString(),
+            to: to.toUTCString(),
           },
           headers: {
             Authorization: `Bearer ${token}`,
-            "userId": userId,
+            userId: userId,
           },
         }
       );
-      return response.data;
+      return response.data.data;
     },
   });
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const response = await axios.get("http://localhost:8000/category", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          userId: userId,
+        },
+      });
+      return response.data.data;
+    },
+  });
+
+  const columns: ColumnDef<TransactionHistoryRow>[] = [
+    {
+      accessorKey: "category",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Category" />
+      ),
+      cell: ({ row }) => {
+        const category = categories.find(
+          (cat) => cat.id === row.original.category_id
+        );
+        const categoryName = category?.name || "Unknown";
+        return <div className="capitalize">{categoryName}</div>;
+      },
+    },
+    {
+      accessorKey: "description",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Description" />
+      ),
+      cell: ({ row }) => (
+        <div className="capitalize">{row.original.description}</div>
+      ),
+    },
+    {
+      accessorKey: "transaction_date",
+      header: "Transaction Date",
+      cell: ({ row }) => {
+        const date = new Date(row.original.transaction_date);
+        const formattedDate = date.toLocaleDateString("default", {
+          timeZone: "UTC",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        });
+        return <div className="text-muted-foreground">{formattedDate}</div>;
+      },
+    },
+    {
+      accessorKey: "type",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Type" />
+      ),
+      cell: ({ row }) => (
+        <div
+          className={cn(
+            "capitalize rounded-lg text-center p-2",
+            row.original.type === "INCOME" &&
+              "bg-emerald-400/10 text-emerald-500",
+            row.original.type === "EXPENSE" && "bg-rose-400/10 text-rose-500"
+          )}
+        >
+          {row.original.type}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "amount",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Amount" />
+      ),
+      cell: ({ row }) => (
+        <p className="text-md rounded-lg bg-gray-400/5 p-2 text-center font-medium">
+          {row.original.amount}
+        </p>
+      ),
+    },
+  ];
 
   const table = useReactTable({
     data: history.data || emptyData,

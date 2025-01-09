@@ -22,19 +22,19 @@ function StatCards({ from, to }: Props) {
     queryKey: ["overview", "stats", from, to],
     queryFn: async () => {
       const response = await axios.get(
-        `http://localhost:8000/transaction/get-overview`,
+        "http://localhost:8000/transaction/get-overview",
         {
           params: {
-            from: from.toISOString(),
-            to: to.toISOString(),
+            from: from.toUTCString(),
+            to: to.toUTCString(),
           },
           headers: {
             Authorization: `Bearer ${token}`,
-            "userId": userId,
-          }
+            userId: userId,
+          },
         }
       );
-      return response.data;
+      return response.data.data;
     },
   });
 

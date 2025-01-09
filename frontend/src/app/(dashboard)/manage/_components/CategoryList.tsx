@@ -26,13 +26,12 @@ function CategoryList({ type }: { type: TransactionType }) {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "userId": userId,
+            userId: userId,
           },
         }
       );
       return response.data.data || [];
     },
-    // staleTime: 1000 * 60 * 5,
   });
 
   const dataAvailable = categoriesQuery.data && categoriesQuery.data.length > 0;
