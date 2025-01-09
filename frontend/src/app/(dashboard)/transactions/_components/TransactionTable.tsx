@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
@@ -26,6 +28,18 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import useCurrentUser from "@/hooks/use-current-user";
+import { DataTableFacetedFilter } from "@/components/datatable/FacetedFilters";
+import { DataTableViewOptions } from "@/components/datatable/ColumnToggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, TrashIcon } from "lucide-react";
+import DeleteTransactionDialog from "./DeleteTransactionDialog";
 
 interface Props {
   from: Date;
@@ -51,6 +65,8 @@ function TransactionTable({ from, to }: Props) {
   const userId = user?.id;
 
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
   const history = useQuery({
     queryKey: ["transactions", "history", from, to],
     queryFn: async () => {
@@ -92,7 +108,8 @@ function TransactionTable({ from, to }: Props) {
       ),
       cell: ({ row }) => {
         const category = categories.find(
-          (cat: { id: string; name: string }) => cat.id === row.original.category_id
+          (cat: { id: string; name: string }) =>
+            cat.id === row.original.category_id
         );
         const name = category?.name || "Unknown";
         return <div className="capitalize">{name}</div>;
@@ -126,6 +143,9 @@ function TransactionTable({ from, to }: Props) {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Type" />
       ),
+      filterFn: (row, id, value) => {
+        return value.includes(row.getValue(id));
+      },
       cell: ({ row }) => (
         <div
           className={cn(
@@ -150,22 +170,53 @@ function TransactionTable({ from, to }: Props) {
         </p>
       ),
     },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => <RowActions transaction={row.original} />,
+    },
   ];
 
   const table = useReactTable({
     data: history.data || emptyData,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
     state: {
       sorting,
+      columnFilters,
     },
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
     <div className="w-full py-4">
+      <div className="flex flex-wrap items-end justify-between gap-2 py-4">
+        <div className="flex items-center gap-2">
+          <p className="font-bold">Filter by:</p>
+          {table.getColumn("type") && (
+            <DataTableFacetedFilter
+              title="Transaction Type"
+              column={table.getColumn("type")}
+              options={[
+                { value: "INCOME", label: "INCOME" },
+                { value: "EXPENSE", label: "EXPENSE" },
+              ]}
+            />
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <DataTableViewOptions table={table} />
+        </div>
+      </div>
       <SkeletonWrapper isLoading={history.isLoading}>
         <div className="rounded-md border">
           <Table>
@@ -241,3 +292,38 @@ function TransactionTable({ from, to }: Props) {
 }
 
 export default TransactionTable;
+
+function RowActions({ transaction }: { transaction: TransactionHistoryRow }) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  return (
+    <>
+      <DeleteTransactionDialog
+        open={showDeleteDialog}
+        setOpen={setShowDeleteDialog}
+        transactionId={transaction.id}
+      />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="w-4 h-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="flex items-center gap-2 cursor-pointer"
+            onSelect={() => {
+              setShowDeleteDialog((prev) => !prev);
+            }}
+          >
+            <TrashIcon className="w-4 h-4 text-muted-foreground" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
+  );
+}

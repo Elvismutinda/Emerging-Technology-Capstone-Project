@@ -7,7 +7,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import useCurrentUser from "@/hooks/use-current-user";
 import axios from "axios";
@@ -17,22 +16,23 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 
 interface Props {
-  trigger: React.ReactNode;
-  category: { id: string };
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  transactionId: string;
 }
 
-function DeleteCategoryDialog({ trigger, category }: Props) {
+function DeleteTransactionDialog({ open, setOpen, transactionId }: Props) {
   const { token, user } = useCurrentUser();
   const userId = user?.id;
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleDeleteCategory = async () => {
+  const handleDeleteTransaction = async () => {
     setIsLoading(true);
 
     try {
-      await axios.delete(
-        `http://localhost:8000/category/${category.id}`,
+      const response = await axios.delete(
+        `http://localhost:8000/transaction/delete/${transactionId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -41,7 +41,7 @@ function DeleteCategoryDialog({ trigger, category }: Props) {
           },
         }
       );
-
+      
       toast.success("Category deleted successfully");
       router.refresh();
     } catch (error) {
@@ -52,19 +52,18 @@ function DeleteCategoryDialog({ trigger, category }: Props) {
     }
   };
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete your
-            category.
+            transaction.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDeleteCategory}>
+          <AlertDialogAction onClick={handleDeleteTransaction}>
             Confirm
             {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
           </AlertDialogAction>
@@ -74,4 +73,4 @@ function DeleteCategoryDialog({ trigger, category }: Props) {
   );
 }
 
-export default DeleteCategoryDialog;
+export default DeleteTransactionDialog;
