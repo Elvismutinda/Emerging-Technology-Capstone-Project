@@ -1,7 +1,8 @@
 package categories
 
 type CreateCategoryRequest struct {
-	Name string `json:"name" validate:"required"`
+	Name         string `json:"name" validate:"required"`
+	CategoryType string `json:"category_type" validate:"required,oneof=INCOME EXPENSE"`
 }
 
 type UpdateCategoryRequest struct {
