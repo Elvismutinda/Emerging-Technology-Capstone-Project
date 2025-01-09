@@ -58,8 +58,8 @@ function TransactionTable({ from, to }: Props) {
         "http://localhost:8000/transaction/get-all",
         {
           params: {
-            from: from.toUTCString(),
-            to: to.toUTCString(),
+            from: from.toISOString(),
+            to: to.toISOString(),
           },
           headers: {
             Authorization: `Bearer ${token}`,
