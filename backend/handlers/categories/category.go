@@ -12,6 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"net/http"
+	"strings"
 )
 
 func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,6 +32,8 @@ func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	categoryType := strings.ToUpper(request.CategoryType)
+
 	// create category
 	condition := &models.Category{
 		UserId: userId,
@@ -39,20 +42,41 @@ func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	model := &models.Category{
 		UserId: userId,
 		Name:   request.Name,
+		Type:   models.TransactionType(categoryType),
 	}
 
 	sv := dbService.DBService{DB: config.DB}
 
-	category, err := sv.GetOrCreate(r.Context(), model, condition)
+	// check if category exists first
+	var category interface{}
+	categoryExisting, err := sv.Get(r.Context(), model)
 	if err != nil {
-		logrus.Error(err)
-		http.Error(w, "error creating category", http.StatusInternalServerError)
-		return
+		if err.Error() == gorm.ErrRecordNotFound.Error() {
+			category, err = sv.Create(r.Context(), model, condition)
+			if err != nil {
+				logrus.Error(err)
+				http.Error(w, "error creating category", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			logrus.Error(err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	response := commonutils.Response{
 		Message: "success",
 		Data:    category,
+	}
+
+	if categoryExisting != nil {
+		response.Data = categoryExisting
+	} else if category != nil {
+		response.Data = category
+	} else {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
 	if err = commonutils.HTTPResponse(w, response, http.StatusOK); err != nil {
