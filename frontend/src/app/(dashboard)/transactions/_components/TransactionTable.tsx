@@ -92,7 +92,7 @@ function TransactionTable({ from, to }: Props) {
       ),
       cell: ({ row }) => {
         const category = categories.find(
-          (cat) => cat.id === row.original.category_id
+          (cat: { id: string; name: string }) => cat.id === row.original.category_id
         );
         const categoryName = category?.name || "Unknown";
         return <div className="capitalize">{categoryName}</div>;
