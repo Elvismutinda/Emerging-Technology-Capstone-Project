@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import { ReactNode } from "react";
 import { TransactionType } from "@/types";
 import {
@@ -55,11 +55,12 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
   const form = useForm<CreateTransactionRequest>({
     resolver: zodResolver(CreateTransactionSchema),
     defaultValues: {
-      date: new Date(),
       type,
+      date: new Date(),
     },
   });
 
+  const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const handleCreateTransaction = async (data: CreateTransactionRequest) => {
@@ -82,7 +83,16 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
       console.log(response.data);
 
       toast.success("Transaction created successfully");
-      form.reset();
+
+      form.reset({
+        type,
+        description: "",
+        amount: 0,
+        date: new Date(),
+        category: undefined,
+      });
+
+      setOpen((prev) => !prev);
     } catch (error) {
       console.error("Error creating transaction", error);
       toast.error("Failed to create transaction.");
@@ -90,8 +100,15 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
       setIsLoading(false);
     }
   };
+
+  const handleCategoryChange = useCallback(
+    (value: string) => {
+      form.setValue("category", value);
+    },
+    [form]
+  );
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -122,9 +139,6 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
                   <FormControl>
                     <Input {...field} defaultValue={""} />
                   </FormControl>
-                  {/* <FormDescription>
-                    Transaction description (optional)
-                  </FormDescription> */}
                 </FormItem>
               )}
             />
@@ -142,6 +156,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
               )}
             />
 
+            {/* Transaction: {form.watch("category")} */}
             <div className="flex items-center justify-between gap-2">
               <FormField
                 control={form.control}
@@ -150,7 +165,10 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
                   <FormItem className="flex flex-col">
                     <FormLabel>Category</FormLabel>
                     <FormControl>
-                      <CategoryPicker type={type} />
+                      <CategoryPicker
+                        type={type}
+                        onChange={handleCategoryChange}
+                      />
                     </FormControl>
                     <FormDescription>
                       Select a category for this transaction
@@ -188,7 +206,10 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
                         <Calendar
                           mode="single"
                           selected={field.value}
-                          onSelect={field.onChange}
+                          onSelect={(value) => {
+                            if (!value) return;
+                            field.onChange(value);
+                          }}
                           initialFocus
                         />
                       </PopoverContent>

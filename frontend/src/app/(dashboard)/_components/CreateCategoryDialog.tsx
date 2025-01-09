@@ -35,9 +35,10 @@ import useCurrentUser from "@/hooks/use-current-user";
 interface Props {
   type: TransactionType;
   trigger?: ReactNode;
+  successCallback: (category: any) => void;
 }
 
-function CreateCategoryDialog({ type, trigger }: Props) {
+function CreateCategoryDialog({ type, trigger, successCallback }: Props) {
   const { token, user } = useCurrentUser();
   const userId = user?.id;
 
@@ -46,7 +47,6 @@ function CreateCategoryDialog({ type, trigger }: Props) {
     resolver: zodResolver(CreateCategorySchema),
     defaultValues: {
       type,
-      name: "",
     },
   });
 
@@ -67,11 +67,11 @@ function CreateCategoryDialog({ type, trigger }: Props) {
         }
       );
 
-      console.log("Response ", response);
+      toast.success(`Category ${data.name} created successfully`);
 
-      toast.success("Category created successfully");
+      successCallback(response.data.data);
 
-      setOpen(false);
+      setOpen((prev) => !prev);
       form.reset();
     } catch (error) {
       console.error("Error creating category", error);
@@ -124,36 +124,35 @@ function CreateCategoryDialog({ type, trigger }: Props) {
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
-                      {...field}
                       placeholder="Enter category name"
-                      defaultValue={""}
+                      {...field}
                     />
                   </FormControl>
-                  {/* <FormDescription>
-                    Transaction description (optional)
-                  </FormDescription> */}
                 </FormItem>
               )}
             />
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => {
-                    form.reset();
-                  }}
-                >
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button type="submit" disabled={isLoading}>
-                Save
-                {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              </Button>
-            </DialogFooter>
           </form>
         </Form>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                form.reset();
+              }}
+            >
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button
+            onClick={form.handleSubmit(handleCreateCategory)}
+            disabled={isLoading}
+          >
+            Save
+            {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

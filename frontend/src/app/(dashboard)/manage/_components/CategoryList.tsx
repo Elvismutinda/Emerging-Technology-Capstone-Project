@@ -4,7 +4,7 @@ import SkeletonWrapper from "@/components/SkeletonWrapper";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { TransactionType } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { PlusSquare, TrendingDown, TrendingUp } from "lucide-react";
+import { PlusSquare, TrashIcon, TrendingDown, TrendingUp } from "lucide-react";
 import React from "react";
 import CreateCategoryDialog from "../../_components/CreateCategoryDialog";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import useCurrentUser from "@/hooks/use-current-user";
+import DeleteCategoryDialog from "../../_components/DeleteCategoryDialog";
 
 function CategoryList({ type }: { type: TransactionType }) {
   const { token, user } = useCurrentUser();
@@ -29,11 +30,12 @@ function CategoryList({ type }: { type: TransactionType }) {
           },
         }
       );
-      return response.data;
+      return response.data.data || [];
     },
+    // staleTime: 1000 * 60 * 5,
   });
 
-  const categories = categoriesQuery.data || [];
+  const dataAvailable = categoriesQuery.data && categoriesQuery.data.length > 0;
 
   return (
     <SkeletonWrapper isLoading={categoriesQuery.isLoading}>
@@ -62,56 +64,66 @@ function CategoryList({ type }: { type: TransactionType }) {
                   Create category
                 </Button>
               }
+              successCallback={() => categoriesQuery.refetch()}
             />
           </CardTitle>
         </CardHeader>
 
         <Separator />
 
-        <div>
-          {categories.length > 0 ? (
-            <ul className="p-4 space-y-2">
-              {categories.map((category: any) => (
-                <li
-                  key={category.id}
-                  className="flex justify-between items-center border rounded-md px-4 py-2 bg-muted/10"
-                >
-                  <span className="font-medium">{category.name}</span>
-                  <span
-                    className={cn(
-                      "text-sm",
-                      type === "INCOME" ? "text-emerald-500" : "text-rose-500"
-                    )}
-                  >
-                    {category.type}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="flex h-40 w-full flex-col items-center justify-center">
-              <p>
-                No
-                <span
-                  className={cn(
-                    "m-1",
-                    type === "INCOME" ? "text-emerald-500" : "text-rose-500"
-                  )}
-                >
-                  {type}
-                </span>
-                categories yet
-              </p>
+        {!dataAvailable && (
+          <div className="flex h-40 w-full flex-col items-center justify-center">
+            <p>
+              No
+              <span
+                className={cn(
+                  "m-1",
+                  type === "INCOME" ? "text-emerald-500" : "text-rose-500"
+                )}
+              >
+                {type}
+              </span>
+              categories yet
+            </p>
 
-              <p className="text-sm text-muted-foreground">
-                Create one to get started
-              </p>
-            </div>
-          )}
-        </div>
+            <p className="text-sm text-muted-foreground">
+              Create one to get started
+            </p>
+          </div>
+        )}
+
+        {dataAvailable && (
+          <div className="grid grid-flow-row gap-2 p-2 sm:grid-flow-row sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {categoriesQuery.data.map((category: any) => (
+              <CategoryCard key={category.name} category={category} />
+            ))}
+          </div>
+        )}
       </Card>
     </SkeletonWrapper>
   );
 }
 
 export default CategoryList;
+
+function CategoryCard({ category }: { category: any }) {
+  return (
+    <div className="flex border-separate flex-col justify-between rounded-md border shadow-md shadow-black/[0.1] dark:shadow-white/[0.1]">
+      <div className="flex flex-col items-center p-4">
+        <span>{category.name}</span>
+      </div>
+      <DeleteCategoryDialog
+        category={category}
+        trigger={
+          <Button
+            className="flex w-full border-separate items-center gap-2 rounded-t-none text-muted-foreground hover:bg-rose-500/20"
+            variant={"secondary"}
+          >
+            <TrashIcon className="w-4 h-4" />
+            Remove
+          </Button>
+        }
+      />
+    </div>
+  );
+}

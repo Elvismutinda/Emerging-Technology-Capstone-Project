@@ -11,7 +11,7 @@ const UserAvatar = ({ user, ...props }: UserAvatarProps) => {
     <Avatar {...props}>
         <AvatarFallback>
           <span className="sr-only">{user.username}</span>
-          <User className="h-4 w-4" />
+          <User className="h-6 w-6" />
         </AvatarFallback>
     </Avatar>
   );
