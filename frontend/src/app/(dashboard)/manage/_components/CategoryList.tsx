@@ -41,13 +41,13 @@ function CategoryList({ type }: { type: TransactionType }) {
         <CardHeader>
           <CardTitle className="flex flex-col sm:flex-row items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              {type === "expense" ? (
+              {type === "EXPENSE" ? (
                 <TrendingDown className="h-12 w-12 items-center rounded-lg bg-rose-400/10 text-rose-500 p-2" />
               ) : (
                 <TrendingUp className="h-12 w-12 items-center rounded-lg bg-emerald-400/10 text-emerald-500 p-2" />
               )}
               <div>
-                {type === "income" ? "Incomes" : "Expenses"} categories
+                {type === "INCOME" ? "Incomes" : "Expenses"} categories
                 <div className="text-sm text-muted-foreground">
                   Sorted by name
                 </div>
@@ -80,7 +80,7 @@ function CategoryList({ type }: { type: TransactionType }) {
                   <span
                     className={cn(
                       "text-sm",
-                      type === "income" ? "text-emerald-500" : "text-rose-500"
+                      type === "INCOME" ? "text-emerald-500" : "text-rose-500"
                     )}
                   >
                     {category.type}
@@ -95,7 +95,7 @@ function CategoryList({ type }: { type: TransactionType }) {
                 <span
                   className={cn(
                     "m-1",
-                    type === "income" ? "text-emerald-500" : "text-rose-500"
+                    type === "INCOME" ? "text-emerald-500" : "text-rose-500"
                   )}
                 >
                   {type}

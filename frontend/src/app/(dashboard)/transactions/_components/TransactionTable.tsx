@@ -88,9 +88,9 @@ const columns: ColumnDef<TransactionHistoryRow>[] = [
       <div
         className={cn(
           "capitalize rounded-lg text-center p-2",
-          row.original.type === "income" &&
+          row.original.type === "INCOME" &&
             "bg-emerald-400/10 text-emerald-500",
-          row.original.type === "expense" && "bg-rose-400/10 text-rose-500"
+          row.original.type === "EXPENSE" && "bg-rose-400/10 text-rose-500"
         )}
       >
         {row.original.type}

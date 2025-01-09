@@ -18,7 +18,7 @@ const Dashboard = () => {
 
           <div className="flex items-center gap-3">
             <CreateTransactionDialogue
-              type="income"
+              type="INCOME"
               trigger={
                 <Button
                   variant="outline"
@@ -29,7 +29,7 @@ const Dashboard = () => {
               }
             />
             <CreateTransactionDialogue
-              type="expense"
+              type="EXPENSE"
               trigger={
                 <Button
                   variant="outline"

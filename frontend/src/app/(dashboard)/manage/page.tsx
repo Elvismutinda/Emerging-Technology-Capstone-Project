@@ -22,8 +22,8 @@ function page() {
         </TabsList>
         <TabsContent value="categories">
           <div className="container flex flex-col gap-4 p-4">
-            <CategoryList type="income" />
-            <CategoryList type="expense" />
+            <CategoryList type="INCOME" />
+            <CategoryList type="EXPENSE" />
           </div>
         </TabsContent>
         <TabsContent value="account">

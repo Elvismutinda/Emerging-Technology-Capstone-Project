@@ -3,4 +3,4 @@ export type SiteConfig = {
   description: string;
 };
 
-export type TransactionType = "income" | "expense";
+export type TransactionType = "INCOME" | "EXPENSE";

@@ -36,7 +36,7 @@ function CategoriesStats({ from, to }: Props) {
       <SkeletonWrapper isLoading={false}>
         <CategoriesCard
           currency="Ksh"
-          type="income"
+          type="INCOME"
           data={statsQuery.data || []}
         />
       </SkeletonWrapper>
@@ -44,7 +44,7 @@ function CategoriesStats({ from, to }: Props) {
       <SkeletonWrapper isLoading={false}>
         <CategoriesCard
           currency="Ksh"
-          type="expense"
+          type="EXPENSE"
           data={statsQuery.data || []}
         />
       </SkeletonWrapper>
@@ -72,7 +72,7 @@ function CategoriesCard({
     <Card className="h-80 w-full col-span-6">
       <CardHeader>
         <CardTitle className="grid grid-flow-row justify-between gap-2 text-muted-foreground md:grid-flow-col">
-          {type === "income" ? "Incomes" : "Expenses"} by category
+          {type === "INCOME" ? "Incomes" : "Expenses"} by category
         </CardTitle>
       </CardHeader>
 
@@ -82,7 +82,7 @@ function CategoriesCard({
             No data for the selected period
             <p className="text-sm text-muted-foreground">
               Try selecting a different period or try adding new{" "}
-              {type === "income" ? "income" : "expense"}
+              {type === "INCOME" ? "income" : "expense"}
             </p>
           </div>
         )}
@@ -112,7 +112,7 @@ function CategoriesCard({
                     <Progress
                       value={percentage}
                       indicator={
-                        type === "income" ? "bg-emerald-500" : "bg-rose-500"
+                        type === "INCOME" ? "bg-emerald-500" : "bg-rose-500"
                       }
                     />
                   </div>
