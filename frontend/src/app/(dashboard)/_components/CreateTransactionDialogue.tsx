@@ -55,7 +55,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
   const form = useForm<CreateTransactionRequest>({
     resolver: zodResolver(CreateTransactionSchema),
     defaultValues: {
-      type,
+      category_type: type,
       date: new Date(),
     },
   });
@@ -85,7 +85,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
       toast.success("Transaction created successfully");
 
       form.reset({
-        type,
+        category_type: type,
         description: "",
         amount: 0,
         date: new Date(),
