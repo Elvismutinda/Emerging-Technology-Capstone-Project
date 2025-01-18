@@ -22,11 +22,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import CategoryPicker from "./CategoryPicker";
@@ -170,9 +168,6 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
                         onChange={handleCategoryChange}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Select a category for this transaction
-                    </FormDescription>
                   </FormItem>
                 )}
               />
@@ -214,10 +209,6 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
                         />
                       </PopoverContent>
                     </Popover>
-                    <FormDescription>
-                      Select a date for this transaction
-                    </FormDescription>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
