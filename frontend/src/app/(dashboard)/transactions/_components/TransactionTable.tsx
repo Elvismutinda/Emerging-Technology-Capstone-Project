@@ -74,8 +74,8 @@ function TransactionTable({ from, to }: Props) {
         "http://localhost:8000/transaction/get-all",
         {
           params: {
-            from: from.toISOString(),
-            to: to.toISOString(),
+            startDate: from.toISOString(),
+            endDate: to.toISOString(),
           },
           headers: {
             Authorization: `Bearer ${token}`,
@@ -111,7 +111,7 @@ function TransactionTable({ from, to }: Props) {
           (cat: { id: string; name: string }) =>
             cat.id === row.original.category_id
         );
-        const name = category?.name || "Unknown";
+        const name = category?.name || "(Deleted category)";
         return <div className="capitalize">{name}</div>;
       },
     },

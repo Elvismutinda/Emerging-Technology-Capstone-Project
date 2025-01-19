@@ -24,14 +24,14 @@ function StatCards({ from, to }: Props) {
       const response = await axios.get(
         "http://localhost:8000/transaction/get-overview",
         {
-          params: {
-            from: from.toISOString(),
-            to: to.toISOString(),
-          },
           headers: {
             Authorization: `Bearer ${token}`,
             userId: userId,
           },
+          params: {
+            startDate: from.toISOString(),
+            endDate: to.toISOString(),
+          }
         }
       );
       return response.data.data;

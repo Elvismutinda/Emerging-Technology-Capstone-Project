@@ -53,7 +53,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
     defaultValues: {
       description: "",
       type,
-      date: new Date(),
+      transaction_date: new Date(),
     },
   });
 
@@ -69,9 +69,14 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
     console.log(data);
 
     try {
+      const formattedData = {
+        ...data,
+        transaction_date: format(data.transaction_date, "yyyy-MM-dd"),
+      };
+
       const response = await axios.post(
         `http://localhost:8000/transaction/create/${type}`,
-        data,
+        formattedData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -88,7 +93,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
         type,
         description: "",
         amount: 0,
-        date: new Date(),
+        transaction_date: new Date(),
         category: undefined,
       });
 
@@ -185,7 +190,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
 
               <FormField
                 control={form.control}
-                name="date"
+                name="transaction_date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Transaction Date</FormLabel>
