@@ -1,6 +1,12 @@
 # Capstone Project - Budget Tracker
 
-This is a group project for building a multi-container application using Docker.
+## Project Objectives
+
+- **Build a basic application**: Develop a simple application that consists of multiple interconnected services.
+- **Containerize each service**: Use Docker to containerize each part of the application, ensuring each service has its own Docker container.
+- **Network the containers**: Set up Docker networks to allow communication between the containers.
+- **Manage persistent data**: Use Docker volumes for data persistence where necessary (e.g., for a database).
+- **Run and monitor the application**: Deploy and run the application locally using Docker, and monitor the resource usage.
 
 ## How to run
 
