@@ -41,3 +41,10 @@ docker compose down
 ```
 docker compose up 
 ```
+
+## Advanced Optional Features
+
+- **Load Balancer Setup**: Implement a simple load balancer in front of the web service (e.g., using NGINX or HAProxy) to distribute requests between multiple replicas of the web service.
+- **Logging**: Set up logging using tools like Fluentd or ELK Stack to capture logs from all containers in a central location.
+- **Health Checks**: Implement Docker health checks for each container to ensure services are running and healthy.
+- **CI/CD Pipeline**: Implement a basic pipeline (e.g., using GitHub Actions) to automate the building and deployment of container images.
