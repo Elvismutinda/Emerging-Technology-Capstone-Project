@@ -5,7 +5,7 @@ export const CreateTransactionSchema = z.object({
   description: z.string().optional(),
   date: z.coerce.date(),
   category: z.string(),
-  category_type: z.union([z.literal("INCOME"), z.literal("EXPENSE")]),
+  type: z.union([z.literal("INCOME"), z.literal("EXPENSE")]),
 });
 
 export type CreateTransactionRequest = z.infer<typeof CreateTransactionSchema>;
