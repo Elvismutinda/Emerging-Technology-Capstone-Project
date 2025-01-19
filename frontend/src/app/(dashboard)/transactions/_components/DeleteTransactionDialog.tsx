@@ -9,6 +9,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import useCurrentUser from "@/hooks/use-current-user";
+import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -22,9 +23,9 @@ interface Props {
 }
 
 function DeleteTransactionDialog({ open, setOpen, transactionId }: Props) {
+  const queryClient = useQueryClient();
   const { token, user } = useCurrentUser();
   const userId = user?.id;
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleDeleteTransaction = async () => {
@@ -41,9 +42,11 @@ function DeleteTransactionDialog({ open, setOpen, transactionId }: Props) {
           },
         }
       );
-      
+
       toast.success("Category deleted successfully");
-      router.refresh();
+      queryClient.invalidateQueries({ queryKey: ["transactions", "history"] });
+
+      setOpen(false);
     } catch (error) {
       console.error("Error deleting category", error);
       toast.error("Error deleting category.");
@@ -63,7 +66,7 @@ function DeleteTransactionDialog({ open, setOpen, transactionId }: Props) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDeleteTransaction}>
+          <AlertDialogAction onClick={handleDeleteTransaction} disabled={isLoading}>
             Confirm
             {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
           </AlertDialogAction>
