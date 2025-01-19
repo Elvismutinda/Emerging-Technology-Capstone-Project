@@ -22,6 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -47,16 +48,17 @@ interface Props {
 }
 
 function CreateTransactionDialogue({ trigger, type }: Props) {
-  const { token, user } = useCurrentUser();
-  const userId = user?.id;
-
   const form = useForm<CreateTransactionRequest>({
     resolver: zodResolver(CreateTransactionSchema),
     defaultValues: {
+      description: "",
       type,
       date: new Date(),
     },
   });
+
+  const { token, user } = useCurrentUser();
+  const userId = user?.id;
 
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -133,10 +135,13 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description (optional)</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Input {...field} defaultValue={""} />
                   </FormControl>
+                  <FormDescription>
+                    Transaction description (optional)
+                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -146,10 +151,13 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount (required)</FormLabel>
+                  <FormLabel>Amount</FormLabel>
                   <FormControl>
                     <Input {...field} defaultValue={0} type="number" />
                   </FormControl>
+                  <FormDescription>
+                    Transaction amount (required)
+                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -168,6 +176,9 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
                         onChange={handleCategoryChange}
                       />
                     </FormControl>
+                    <FormDescription>
+                      Select a category for this transaction
+                    </FormDescription>
                   </FormItem>
                 )}
               />
@@ -209,6 +220,9 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
                         />
                       </PopoverContent>
                     </Popover>
+                    <FormDescription>
+                      Select a date for this
+                    </FormDescription>
                   </FormItem>
                 )}
               />
