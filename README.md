@@ -48,3 +48,8 @@ docker compose up
 - **Logging**: Set up logging using tools like Fluentd or ELK Stack to capture logs from all containers in a central location.
 - **Health Checks**: Implement Docker health checks for each container to ensure services are running and healthy.
 - **CI/CD Pipeline**: Implement a basic pipeline (e.g., using GitHub Actions) to automate the building and deployment of container images.
+
+
+### Logging
+
+http://localhost:5601/app/management/kibana/indexPatterns

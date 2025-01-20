@@ -27,6 +27,10 @@ services:
       retries: 5
     networks:
       - app-network
+    # deploy:
+    #   replicas: 3 # Scale the frontend service to 3 replicas
+    #   restart_policy:
+    #     condition: on-failure
 
   backend:
     container_name: backend
@@ -84,6 +88,51 @@ services:
     networks:
       - app-network
 
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - app-network
+
+  logstash:
+    container_name: logstash
+    image: docker.elastic.co/logstash/logstash:7.14.0
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    ports:
+      - "6000:6000"
+      - "9600:9600"
+    networks:
+      - app-network
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.14.0
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - app-network
+    depends_on:
+      - elasticsearch
+
 networks:
   app-network:
     driver: bridge
@@ -93,3 +142,5 @@ volumes:
   backend_data:
   frontend_data:
   migration_data:
+  esdata:
+    driver: local
