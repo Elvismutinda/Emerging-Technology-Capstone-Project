@@ -41,7 +41,7 @@ jobs:
     - name: Build
       run: |
         cd backend
-        go build -v .
+        go build -v backend/commands/server/
 
     # - name: Test
     #   run: go test -v ./...
