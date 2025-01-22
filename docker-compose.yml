@@ -164,4 +164,11 @@ volumes:
   db_data:
   backend_data:
   frontend_data:
+<<<<<<< Updated upstream
   migration_data:
+=======
+  migration_data:
+  esdata:
+    driver: local
+  ./backend/migrations:
+>>>>>>> Stashed changes
