@@ -166,4 +166,3 @@ volumes:
   backend_data:
   frontend_data:
   migration_data:
-  ./backend/migrations:
