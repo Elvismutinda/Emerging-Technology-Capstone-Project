@@ -135,6 +135,7 @@ services:
   logstash:
     container_name: logstash
     image: docker.elastic.co/logstash/logstash:7.15.2
+    restart: always
     volumes:
       - ./logstash/config:/usr/share/logstash/config
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
@@ -164,11 +165,5 @@ volumes:
   db_data:
   backend_data:
   frontend_data:
-<<<<<<< Updated upstream
   migration_data:
-=======
-  migration_data:
-  esdata:
-    driver: local
   ./backend/migrations:
->>>>>>> Stashed changes
