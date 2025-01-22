@@ -7,9 +7,29 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     ports:
-      - '8080:80'
+      - "3000:80"
     volumes:
       - ./nginx/logs:/var/log/nginx
+      - ./nginx/configs/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+  nginx-backend:
+    depends_on:
+      - backend
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx/logs:/var/log/nginx
+      - ./nginx/configs/default.conf:/etc/nginx/conf.d/default.conf
     networks:
       - app-network
     logging:
@@ -23,29 +43,23 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - '3000:3000'
+      - "3000"
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: on-failure
     volumes:
       - frontend_data:/app/node_modules
     restart: on-failure
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:3000 || exit 1" ]
+      test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
     networks:
       - app-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    # deploy:
-    #   replicas: 3 # Scale the frontend service to 3 replicas
-    #   restart_policy:
-    #     condition: on-failure
 
   backend:
-    container_name: backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -56,10 +70,14 @@ services:
     environment:
       - ENVIRONMENT=docker
     ports:
-      - "8000:8000"
+      - "8000"
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: on-failure
     restart: on-failure
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8000 || exit 1" ]
+      test: ["CMD-SHELL", "curl -f http://localhost:8000 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -68,11 +86,6 @@ services:
         condition: service_healthy
     networks:
       - app-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   db:
     container_name: db
@@ -83,7 +96,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -100,20 +113,14 @@ services:
     env_file:
       - ./backend/.env
     command: >
-      migrate apply
-      --url postgres://postgres:password123@db:5432/budget_tracker?sslmode=disable
+      migrate apply --url postgres://postgres:pass@db:5432/budget_tracker?sslmode=disable
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - ./backend/migrations:/migrations
+      - ./backend/migrations:/app/migrations
     networks:
       - app-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   elasticsearch:
     container_name: elasticsearch
@@ -135,7 +142,6 @@ services:
   logstash:
     container_name: logstash
     image: docker.elastic.co/logstash/logstash:7.15.2
-    restart: always
     volumes:
       - ./logstash/config:/usr/share/logstash/config
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
@@ -166,3 +172,5 @@ volumes:
   backend_data:
   frontend_data:
   migration_data:
+  esdata:
+    driver: local
