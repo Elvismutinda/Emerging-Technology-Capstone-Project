@@ -41,6 +41,7 @@ import { Calendar } from "@/components/ui/calendar";
 import axios from "axios";
 import { toast } from "sonner";
 import useCurrentUser from "@/hooks/use-current-user";
+import CategorySelector from "./CategorySelector";
 
 interface Props {
   trigger: ReactNode;
@@ -169,7 +170,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
 
             {/* Transaction: {form.watch("category")} */}
             <div className="flex items-center justify-between gap-2">
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="category"
                 render={({ field }) => (
@@ -186,6 +187,25 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
                     </FormDescription>
                   </FormItem>
                 )}
+              /> */}
+
+              <FormField 
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Category</FormLabel>
+                  <FormControl>
+                    <CategorySelector 
+                      type={type}
+                      onChange={handleCategoryChange}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Select a category for this transaction
+                  </FormDescription>
+                </FormItem>
+              )}
               />
 
               <FormField
@@ -213,7 +233,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
                           selected={field.value}
@@ -221,6 +241,7 @@ function CreateTransactionDialogue({ trigger, type }: Props) {
                             if (!value) return;
                             field.onChange(value);
                           }}
+                          disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                           initialFocus
                         />
                       </PopoverContent>

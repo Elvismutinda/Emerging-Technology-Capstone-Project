@@ -89,7 +89,7 @@ function CreateCategoryDialog({ type, trigger, successCallback }: Props) {
         ) : (
           <Button
             variant="ghost"
-            className="flex border-separate items-center justify-start rounded-none border-b px-3 py-3 text-muted-foreground"
+            className="flex w-full items-center justify-start rounded-none border-b px-3 py-3 text-muted-foreground"
           >
             <PlusSquare className="w-4 h-4 mr-2" />
             Create new

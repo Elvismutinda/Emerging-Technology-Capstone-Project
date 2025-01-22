@@ -41,11 +41,6 @@ import {
 import { MoreHorizontal, TrashIcon } from "lucide-react";
 import DeleteTransactionDialog from "./DeleteTransactionDialog";
 
-interface Props {
-  from: Date;
-  to: Date;
-}
-
 const emptyData: any[] = [];
 
 export type TransactionHistoryRow = {
@@ -60,7 +55,7 @@ export type TransactionHistoryRow = {
   category_id: string;
 };
 
-function TransactionTable({ from, to }: Props) {
+function TransactionTable() {
   const { token, user } = useCurrentUser();
   const userId = user?.id;
 
@@ -68,15 +63,11 @@ function TransactionTable({ from, to }: Props) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const history = useQuery({
-    queryKey: ["transactions", "history", from, to],
+    queryKey: ["transactions", "history"],
     queryFn: async () => {
       const response = await axios.get(
         "http://localhost:8000/transaction/get-all",
         {
-          params: {
-            startDate: from.toISOString(),
-            endDate: to.toISOString(),
-          },
           headers: {
             Authorization: `Bearer ${token}`,
             userId: userId,

@@ -14,6 +14,10 @@ interface Props {
   to: Date;
 }
 
+function formattedDate(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+
 function StatCards({ from, to }: Props) {
   const { token, user } = useCurrentUser();
   const userId = user?.id;
@@ -27,11 +31,11 @@ function StatCards({ from, to }: Props) {
           headers: {
             Authorization: `Bearer ${token}`,
             userId: userId,
-          }
-          // params: {
-          //   startDate: from.toISOString(),
-          //   endDate: to.toISOString(),
-          // }
+          },
+          params: {
+            start_date: formattedDate(from),
+            end_date: formattedDate(to),
+          },
         }
       );
       return response.data.data;
