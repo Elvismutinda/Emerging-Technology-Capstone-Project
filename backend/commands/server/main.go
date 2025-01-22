@@ -49,8 +49,7 @@ func main() {
 		AllowedMethods: []string{"GET", "POST", "PUT", "UPDATE", "OPTIONS", "DELETE", "PATCH"},
 	})
 
-	var handler http.Handler
-	handler = c.Handler(server.Router.Router)
+	handler := c.Handler(server.Router.Router)
 
 	logrus.Infoln("Starting server on Port", localCfg.Port)
 	err = http.ListenAndServe(fmt.Sprintf("%v:%v", "", localCfg.Port),

@@ -36,7 +36,7 @@ type Transaction struct {
 type Category struct {
 	models.Model
 	UserId string          `gorm:"not null" json:"user_id"` // Foreign key to User
-	Name   string          `gorm:"not null" json:"name" gorm:"uniqueIndex:idx_category_name" `
+	Name   string          `gorm:"not null;uniqueIndex:idx_category_name" json:"name"`
 	Type   TransactionType `gorm:"not null" json:"type" `
 }
 
