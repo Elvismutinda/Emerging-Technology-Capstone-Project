@@ -165,4 +165,6 @@ volumes:
   db_data:
   backend_data:
   frontend_data:
-  migration_data:
+  ./backend/migrations:
+  esdata:
+    driver: local
