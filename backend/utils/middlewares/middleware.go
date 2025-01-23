@@ -49,8 +49,7 @@ func AuthenticateUserMiddleware(cfg *config.LocalConfig) func(http.Handler) http
 			}
 
 			// add userId to context
-			userId := "userId"
-			ctx := context.WithValue(r.Context(), userId, headerUserId)
+			ctx := context.WithValue(r.Context(), "userId", headerUserId)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
