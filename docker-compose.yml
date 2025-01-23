@@ -106,7 +106,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./backend/migrations:/migrations
+      - migrations_data:/migrations
     networks:
       - app-network
     logging:
@@ -165,6 +165,4 @@ volumes:
   db_data:
   backend_data:
   frontend_data:
-  ./backend/migrations:
-  esdata:
-    driver: local
+  migrations_data:
