@@ -1,6 +1,7 @@
 package commonutils
 
 import (
+	"backend/utils/middlewares"
 	"context"
 	"encoding/json"
 	"errors"
@@ -37,7 +38,7 @@ func HTTPResponse(w http.ResponseWriter, response Response, statusCode int) erro
 }
 
 func GetUserIdFromContext(ctx context.Context) (string, bool) {
-	userID, ok := ctx.Value("userId").(string)
+	userID, ok := ctx.Value(middlewares.UserId).(string)
 	return userID, ok
 }
 
