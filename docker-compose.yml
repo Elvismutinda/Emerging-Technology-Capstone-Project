@@ -23,7 +23,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - '3000:3000'
+      - '3000'
     volumes:
       - frontend_data:/app/node_modules
     restart: on-failure
@@ -39,10 +39,10 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    # deploy:
-    #   replicas: 3 # Scale the frontend service to 3 replicas
-    #   restart_policy:
-    #     condition: on-failure
+    deploy:
+      replicas: 3 # Scale the frontend service to 3 replicas
+      restart_policy:
+        condition: on-failure
 
   backend:
     container_name: backend
@@ -106,7 +106,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - migrations_data:/migrations
+      - ./backend/migrations:/migrations
     networks:
       - app-network
     logging:
@@ -165,4 +165,4 @@ volumes:
   db_data:
   backend_data:
   frontend_data:
-  migrations_data:
+  migration_data:
