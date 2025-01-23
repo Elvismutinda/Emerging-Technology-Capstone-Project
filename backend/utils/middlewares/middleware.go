@@ -9,10 +9,6 @@ import (
 	"net/http"
 )
 
-type contextKey string
-
-const userIDKey contextKey = "userId"
-
 func AuthenticateUserMiddleware(cfg *config.LocalConfig) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +49,8 @@ func AuthenticateUserMiddleware(cfg *config.LocalConfig) func(http.Handler) http
 			}
 
 			// add userId to context
-			ctx := context.WithValue(r.Context(), userIDKey, headerUserId)
+			userId := "userId"
+			ctx := context.WithValue(r.Context(), userId, headerUserId)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
